@@ -136,9 +136,27 @@ public class ImageUtil {
                     for(int xi = 0; xi <blockSize; xi ++)
                         outImg.getRaster().setSample(x+xi, y+yi,band, avgGrayLevel);
             }
-
-
         return outImg;
     }
 
+    public static int constrain(int val, int min, int max){
+        return val > max ? max : (val < min ? min : val);
+    }
+    public static int constrain(int val){
+        return constrain(val,0,255);
+    }
+
+    public static BufferedImage brightnessV1(BufferedImage inImg, int offset){
+        BufferedImage outImg = new BufferedImage(inImg.getWidth(),inImg.getHeight(),inImg.getType());
+
+        for (int band = 0; band < inImg.getRaster().getNumBands(); band++)
+        for (int y = 0; y < inImg.getHeight(); y++)
+            for (int x = 0; x < inImg.getWidth(); x++) {
+                int inGrayLevel = inImg.getRaster().getSample(x,y,band);
+                int outGrayLevel = constrain(inGrayLevel + offset);
+                outImg.getRaster().setSample(x,y, band, outGrayLevel);
+            }
+
+        return outImg;
+    }
 }

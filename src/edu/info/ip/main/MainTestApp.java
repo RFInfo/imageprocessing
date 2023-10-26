@@ -13,7 +13,7 @@ public class MainTestApp {
 
         BufferedImage img = loadImage(imageFile);
 
-//        displayImage(img, "Original Image");
+        displayImage(img, "Original Image");
 
 //        ImageUtil.saveImage(img, "lena.jpg", "jpg");
 //        ImageUtil.saveImage(img, "lena.bmp", "bmp");
@@ -36,6 +36,17 @@ public class MainTestApp {
 
 //            displayImage(grayLevelGenerator(0, 40,50, 400), "Gray Level Generator");
 
-        displayImage(pixelate(img,128),"Pixelate");
+//        displayImage(pixelate(img,128),"Pixelate");
+
+        // Lab04
+
+        displayImage(brightnessV1(img, 40),"Brightness +40");
+        displayImage(brightnessV1(img, -40),"Brightness -40");
+
+        BufferedImage tmp1 = brightnessV1(img, -60);
+        BufferedImage tmp2 = brightnessV1(tmp1, 60);
+
+        displayImage(tmp2, "-60 +60");
+
     }
 }
