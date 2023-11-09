@@ -197,6 +197,28 @@ public class ImageUtil {
         return outImg;
     }
 
+    public static BufferedImage brightnessRGB(BufferedImage inImg, int offsetR, int offsetG, int offsetB){
+        BufferedImage outImg = new BufferedImage(inImg.getWidth(),inImg.getHeight(),inImg.getType());
+
+        short[] rLUT = new short[256];
+        short[] gLUT = new short[256];
+        short[] bLUT = new short[256];
+
+        short[][] rgbLUT = {rLUT, gLUT, bLUT};
+
+        for (int i = 0; i < 256; i++) {
+            rLUT[i] = (short) constrain(i+offsetR);
+            gLUT[i] = (short) constrain(i+offsetG);
+            bLUT[i] = (short) constrain(i+offsetB);
+        }
+
+        ShortLookupTable shortLookupTable = new ShortLookupTable(0,rgbLUT);
+        LookupOp lookupOp = new LookupOp(shortLookupTable, null);
+        lookupOp.filter(inImg,outImg);
+
+        return outImg;
+    }
+
     public static BufferedImage applySettingsDlg(BufferedImage img,
                                                  AbstractSettingsDialog dialog) {
         if (img == null)

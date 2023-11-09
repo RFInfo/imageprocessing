@@ -1,6 +1,7 @@
 package edu.info.ip.main;
 
 import edu.info.ip.util.BrightnessDlg;
+import edu.info.ip.util.BrightnessRGBDlg;
 
 import java.awt.image.BufferedImage;
 
@@ -42,7 +43,7 @@ public class MainTestApp {
 
         // Lab04
 
-        displayImage(brightnessV1(img, 40),"Brightness v1 +40");
+//        displayImage(brightnessV1(img, 40),"Brightness v1 +40");
 //        displayImage(brightnessV1(img, -40),"Brightness v1 -40");
 
 //        BufferedImage tmp1 = brightnessV1(img, -60);
@@ -52,11 +53,15 @@ public class MainTestApp {
 
         // Lab06
 
-        displayImage(brightnessV2(img, 40),"Brightness v2 +40");
-        displayImage(brightnessV3(img, 40),"Brightness v3 +40");
+//        displayImage(brightnessV2(img, 40),"Brightness v2 +40");
+//        displayImage(brightnessV3(img, 40),"Brightness v3 +40");
 
 //        BufferedImage testImg = applySettingsDlg(img, new BrightnessDlg());
 //        displayImage(testImg,"");
 
+//        displayImage(brightnessRGB(img,-20, 0, -10), "BrightnessRGB");
+
+        BufferedImage testImg = applySettingsDlg(img, new BrightnessRGBDlg());
+        displayImage(testImg,"");
     }
 }
