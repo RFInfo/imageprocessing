@@ -45,6 +45,26 @@ public class ImageUtil {
         frame.setVisible(true);
     }
 
+    public static void displayImage(BufferedImage img) {
+        displayImage(img, "");
+    }
+    public static BufferedImage applySettingsDlg(BufferedImage img,
+                                                 AbstractSettingsDialog dialog) {
+        if (img == null)
+            return null;
+        JFrame frame = new JFrame();
+        ImagePanel imagePanel = new ImagePanel();
+        imagePanel.setFitToScreen(false);
+        imagePanel.setImage(img);
+        frame.setContentPane(new JScrollPane(imagePanel));
+        frame.pack();
+        frame.setVisible(true);
+        dialog.setImagePanel(imagePanel);
+        dialog.pack();
+        dialog.setVisible(true);
+        frame.dispose();
+        return imagePanel.getImage();
+    }
     public static BufferedImage generateRandomImage(int width, int height){
         BufferedImage img = null;
 
@@ -71,8 +91,15 @@ public class ImageUtil {
 
                 int alpha = (pixel & 0xff000000) >> 24; // (pixel >> 24) & 0xff
                 int red =   (pixel & 0x00ff0000) >> 16; // (pixel >> 16) & 0xff
-                int green = (pixel & 0x0000ff00) >> 8;  //  (pixel >> 8) & 0xff
+                int green = (pixel & 0x0000ff00) >> 8;  // (pixel >> 8) & 0xff
                 int blue =  (pixel & 0x000000ff);       // (pixel) & 0xff
+
+                // how to recompose
+                //pixel = 0x00000000 | (alpha << 24) | (red << 16) | (green << 8) | blue;
+
+                // print first row
+//                if(y == 0)
+//                    System.out.println(alpha + " " + red + " " + green + " " + blue);
 
                 switch (band){
                     case 'A' -> outImg.getRaster().setSample(x,y,0,alpha);
@@ -96,21 +123,21 @@ public class ImageUtil {
     }
 
     public static BufferedImage grayLevelGenerator(int firstGrayLevel, int blockSize, int grayLevelStep, int imgHeight){
-        BufferedImage outImg = null;
 
-        int w = blockSize * ((256 - firstGrayLevel) / grayLevelStep);
-        int h = imgHeight;
+        int imgWidth = ((256 - firstGrayLevel) / grayLevelStep) * blockSize;
 
-        outImg = new BufferedImage(w,h, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage outImg = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_BYTE_GRAY);
 
         for (int y = 0; y < outImg.getHeight(); y++) {
             int grayLevel = firstGrayLevel;
-            for (int x = 0; x < outImg.getWidth(); x+=blockSize) {
-                for(int xi = 0; xi <blockSize; xi ++)
-                    outImg.getRaster().setSample(x+xi,y, 0, grayLevel);
-                grayLevel+=grayLevelStep;
+            for (int x = 0; x < outImg.getWidth(); x += blockSize) {
+                for (int xi = 0; xi < blockSize; xi++) {
+                    outImg.getRaster().setSample(x + xi, y, 0, grayLevel);
+                }
+                grayLevel += grayLevelStep;
             }
         }
+
         return outImg;
     }
 
@@ -219,21 +246,5 @@ public class ImageUtil {
         return outImg;
     }
 
-    public static BufferedImage applySettingsDlg(BufferedImage img,
-                                                 AbstractSettingsDialog dialog) {
-        if (img == null)
-            return null;
-        JFrame frame = new JFrame();
-        ImagePanel imagePanel = new ImagePanel();
-        imagePanel.setFitToScreen(false);
-        imagePanel.setImage(img);
-        frame.setContentPane(new JScrollPane(imagePanel));
-        frame.pack();
-        frame.setVisible(true);
-        dialog.setImagePanel(imagePanel);
-        dialog.pack();
-        dialog.setVisible(true);
-        frame.dispose();
-        return imagePanel.getImage();
-    }
+
 }
