@@ -168,11 +168,84 @@ public class ImageUtil {
         return outImg;
     }
 
+    public static BufferedImage flipV(BufferedImage inImg) {
+        BufferedImage outImg = new BufferedImage(inImg.getWidth(), inImg.getWidth(), inImg.getType());
+
+        for (int y = 0; y < outImg.getHeight() / 2; y++)
+            for (int x = 0; x < outImg.getWidth(); x++) {
+//                int pixel = inImg.getRGB(x,y);
+                outImg.setRGB(x, y, inImg.getRGB(x, (inImg.getHeight() - 1) - y));
+                outImg.setRGB(x, (inImg.getHeight() - 1) - y, inImg.getRGB(x, y));
+            }
+
+        return outImg;
+    }
+
+    public static BufferedImage flipH(BufferedImage inImg) {
+        BufferedImage outImg = new BufferedImage(inImg.getWidth(), inImg.getWidth(), inImg.getType());
+
+        for (int y = 0; y < outImg.getHeight(); y++)
+            for (int x = 0; x < outImg.getWidth() / 2; x++) {
+//                int pixel = inImg.getRGB(x,y);
+                outImg.setRGB(x, y, inImg.getRGB((inImg.getWidth() - 1) - x, y));
+                outImg.setRGB((inImg.getWidth() - 1) - x, y, inImg.getRGB(x, y));
+            }
+
+        return outImg;
+    }
+
     public static int constrain(int val, int min, int max){
         return val > max ? max : (val < min ? min : val);
     }
     public static int constrain(int val){
         return constrain(val,0,255);
+    }
+
+    public static BufferedImage toGray(BufferedImage input) {
+        BufferedImage output;
+        output = new BufferedImage(input.getWidth(), input.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+
+        for (int y = 0; y < input.getHeight(); y++)
+            for (int x = 0; x < input.getWidth(); x++) {
+                int r = input.getRaster().getSample(x, y, 0);
+                int g = input.getRaster().getSample(x, y, 1);
+                int b = input.getRaster().getSample(x, y, 2);
+                output.getRaster().setSample(x, y, 0, (r + g + b) / 3);
+            }
+        return output;
+    }
+
+    public enum GrayTransforms {
+        GRAY_TRANSFORMS_GREEN, GRAY_TRANSFORMS_SQRT,
+        GRAY_TRANSFORMS_AVG, GRAY_TRANSFORMS_USUAL, GRAY_TRANSFORMS_PAL
+    }
+    public static BufferedImage colorToGray(BufferedImage inImg, GrayTransforms version) {
+        BufferedImage outImg = new
+                BufferedImage(inImg.getWidth(), inImg.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        if (inImg.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+            inImg.copyData(outImg.getRaster());
+            return outImg;
+        }
+        for (int y = 0; y < inImg.getHeight(); y++)
+            for (int x = 0; x < inImg.getWidth(); x++) {
+                int r = inImg.getRaster().getSample(x, y, 0);
+                int g = inImg.getRaster().getSample(x, y, 1);
+                int b = inImg.getRaster().getSample(x, y, 2);
+                int grayLevel = 0;
+                switch (version) {
+                    case GRAY_TRANSFORMS_GREEN -> grayLevel = g;
+                    case GRAY_TRANSFORMS_SQRT -> grayLevel =
+                            constrain((int) Math.round(Math.sqrt(r * r + g * g + b * b)));
+                    case GRAY_TRANSFORMS_AVG -> grayLevel =
+                            constrain((int) Math.round((double) (r + g + b) / 3));
+                    case GRAY_TRANSFORMS_USUAL -> grayLevel =
+                            constrain((int) Math.round((double) (3 * r + 2 * g + 4 * b) / 9));
+                    case GRAY_TRANSFORMS_PAL -> grayLevel =
+                            constrain((int) Math.round(0.299 * r + 0.587 * g + 0.114 * b));
+                }
+                outImg.getRaster().setSample(x, y, 0, grayLevel);
+            }
+        return outImg;
     }
 
     public static BufferedImage brightnessV1(BufferedImage inImg, int offset){
