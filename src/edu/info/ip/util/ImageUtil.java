@@ -387,4 +387,59 @@ public class ImageUtil {
         op.filter(src,dst);
         return dst;
     }
+
+    public static BufferedImage negative(BufferedImage src){
+        BufferedImage dst = new BufferedImage(src.getWidth(),src.getHeight(),src.getType());
+        short[] negativeLUT = new short[256];
+        for(short i = 0; i<negativeLUT.length; i++){
+            negativeLUT[i] = (short)constrain(255 - i);
+        }
+        ShortLookupTable lut = new ShortLookupTable(0,negativeLUT);
+        LookupOp op = new LookupOp(lut,null);
+        op.filter(src,dst);
+        return dst;
+    }
+
+    public static BufferedImage threshold(BufferedImage src, int value){
+        BufferedImage dst = null;
+        if(src.getType() != BufferedImage.TYPE_BYTE_GRAY) {
+            System.out.println("Not a gray image!");
+            return dst;
+        }
+        dst = new
+                BufferedImage(src.getWidth(),src.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
+        short[] thresholdLUT = new short[256];
+        for(short i = 0; i<thresholdLUT.length; i++){
+            thresholdLUT[i] = (short)((i < value) ? 0 : 255);
+        }
+        ShortLookupTable lut = new ShortLookupTable(0,thresholdLUT);
+        LookupOp op = new LookupOp(lut,null);
+        op.filter(src,dst);
+        return dst;
+    }
+
+    public static BufferedImage applyMask(BufferedImage src, BufferedImage mask){
+// src and mask == same size
+        BufferedImage dst = null;
+        dst = new BufferedImage(src.getWidth(),src.getHeight(),src.getType());
+        for (int y = 0; y < src.getHeight(); y++)
+            for (int x = 0; x < src.getWidth(); x++) {
+                int pixel = src.getRGB(x,y);
+                dst.setRGB(x,y,(mask.getRaster().getSample(x,y,0)>0) ? pixel : 0);
+            }
+        return dst;
+    }
+
+    static public BufferedImage getBitPlane(BufferedImage inImg, int bitLevel){
+        BufferedImage outImg = new BufferedImage(inImg.getWidth(), inImg.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+
+        for (int y = 0; y < inImg.getHeight(); y++)
+            for (int x = 0; x < inImg.getWidth(); x++) {
+                int pixel = inImg.getRaster().getSample(x,y,0);
+                pixel = (pixel >>> bitLevel) & 1;
+                outImg.getRaster().setSample(x,y,0,pixel);
+            }
+        return outImg;
+    }
+
 }

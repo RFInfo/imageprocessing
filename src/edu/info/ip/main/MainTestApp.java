@@ -3,6 +3,7 @@ package edu.info.ip.main;
 import edu.info.ip.util.BrightnessDlg;
 import edu.info.ip.util.BrightnessRGBDlg;
 import edu.info.ip.util.GammaDlg;
+import edu.info.ip.util.ThresholdDlg;
 
 import java.awt.image.BufferedImage;
 
@@ -12,6 +13,7 @@ public class MainTestApp {
     public static void main(String[] args) {
 
         String imageFile = "./test_images/lena_color_512.bmp";
+//        String imageFile = "./test_images/rice.bmp";
 //        String imageFile = "./test_images/lena_gray_512.bmp";
 //        String imageFile = "./test_images/halloween.png";
 
@@ -25,16 +27,16 @@ public class MainTestApp {
 
         // Lab02
 
-//        ImageUtil.displayImage(ImageUtil.generateRandomImage(800,800),"Random Gray Image");
-//        ImageUtil.displayImage(ImageUtil.extractBand(img,'R'), "Banda R");
-//        ImageUtil.displayImage(ImageUtil.extractBand(img,'G'), "Banda G");
-//        ImageUtil.displayImage(ImageUtil.extractBand(img,'B'), "Banda B");
-//        ImageUtil.displayImage(ImageUtil.extractBand(img,'A'), "Banda A");
+//        displayImage(generateRandomImage(800,800),"Random Gray Image");
+//        displayImage(extractBand(img,'R'), "Banda R");
+//        displayImage(extractBand(img,'G'), "Banda G");
+//        displayImage(extractBand(img,'B'), "Banda B");
+//        displayImage(extractBand(img,'A'), "Banda A");
 
-//        ImageUtil.displayImage(ImageUtil.extractBandV2(img,0), "Banda R");
-//        ImageUtil.displayImage(ImageUtil.extractBandV2(img,1), "Banda G");
-//        ImageUtil.displayImage(ImageUtil.extractBandV2(img,2), "Banda B");
-//        ImageUtil.displayImage(ImageUtil.extractBandV2(img,3), "Banda A");
+//        displayImage(extractBandV2(img,0), "Banda R");
+//        displayImage(extractBandV2(img,1), "Banda G");
+//        displayImage(extractBandV2(img,2), "Banda B");
+//        displayImage(extractBandV2(img,3), "Banda A");
 
         // Lab03
 
@@ -74,6 +76,25 @@ public class MainTestApp {
 //        BufferedImage testImg = applySettingsDlg(img, new GammaDlg());
 //        displayImage(testImg,"Gamma Contrast");
 
-        displayImage(contrastStretch(contrastStretch(img)),"Contrast Stretch");
+//        displayImage(contrastStretch(contrastStretch(img)),"Contrast Stretch");
+
+//        displayImage((negative(img)),"Negative");
+
+//        displayImage(colorToGray(img,GrayTransforms.GRAY_TRANSFORMS_GREEN),"Gray g");
+//        displayImage(colorToGray(img,GrayTransforms.GRAY_TRANSFORMS_SQRT),"Gray sqrt");
+//        displayImage(colorToGray(img,GrayTransforms.GRAY_TRANSFORMS_AVG),"Gray Avg");
+//        displayImage(colorToGray(img,GrayTransforms.GRAY_TRANSFORMS_USUAL),"Gray usual");
+//        displayImage(colorToGray(img,GrayTransforms.GRAY_TRANSFORMS_PAL),"Gray PAL");
+
+//        BufferedImage binaryImg = threshold(img,100);
+        BufferedImage binaryImg = applySettingsDlg(img, new ThresholdDlg());
+        displayImage(binaryImg);
+
+        BufferedImage negative = negative(binaryImg);
+        displayImage(negative);
+
+        displayImage(applyMask(img,negative));
+
+
     }
 }
