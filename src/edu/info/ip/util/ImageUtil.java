@@ -319,5 +319,72 @@ public class ImageUtil {
         return outImg;
     }
 
+    public static BufferedImage contrastSimple(BufferedImage src, float scale){
+        BufferedImage dst = null;
+        dst = new BufferedImage(src.getWidth(),src.getHeight(), src.getType());
+        short[] contrastLUT = new short[256];
+        for(short i = 0; i<contrastLUT.length; i++){
+            contrastLUT[i] = (short)constrain(Math.round(scale * i));
+        }
+        ShortLookupTable lut = new ShortLookupTable(0,contrastLUT);
+        LookupOp op = new LookupOp(lut,null);
+        op.filter(src,dst);
+        return dst;
+    }
 
+    public static BufferedImage contrastGamma(BufferedImage src, double gamma){
+        BufferedImage dst = null;
+        dst = new BufferedImage(src.getWidth(),src.getHeight(),src.getType());
+        short[] contrastLUT = new short[256];
+        for(short i = 0; i<contrastLUT.length; i++){
+            double a = i / 255.0; // scale to [0..1]
+            double b = Math.pow(a,1.0/gamma);
+            contrastLUT[i] = (short)constrain((int)Math.round(b * 255.0)); // scale to [0..255]
+        }
+        for (int i = 0; i < 256; i++)
+            System.out.print(contrastLUT[i] + ", ");
+        System.out.println();
+        ShortLookupTable lut = new ShortLookupTable(0,contrastLUT);
+        LookupOp op = new LookupOp(lut,null);
+        op.filter(src,dst);
+        return dst;
+    }
+
+    public static int normalize(int val, int oldMin, int oldMax, int newMin, int newMax){
+        double c = 1.0 * (newMax - newMin)/(oldMax - oldMin);
+        return (int)Math.round(c*(val - oldMin) + newMin);
+    }
+    public static BufferedImage contrastStretch(BufferedImage src){
+        BufferedImage dst = new
+                BufferedImage(src.getWidth(),src.getHeight(),src.getType());
+        short[][] contrastStretchLUT = new short[src.getRaster().getNumBands()][256];
+        for(int b = 0; b<src.getRaster().getNumBands(); b++) {
+            int max = Integer.MIN_VALUE;
+            int min = Integer.MAX_VALUE;
+            int pixel;
+            // find max and min
+            for (int y = 0; y < src.getHeight(); y++)
+                for (int x = 0; x < src.getWidth(); x++) {
+                    pixel = src.getRaster().getSample(x, y, b);
+                    if (pixel > max)
+                        max = pixel;
+                    if (pixel < min)
+                        min = pixel;
+                }
+            System.out.println("min= " + min + " max= " + max);
+            for (int i = min; i <= max; i++)
+                contrastStretchLUT[b][i] = (short) normalize(i, min, max, 0, 255);
+            for (int i = 0; i < 256; i++)
+                System.out.print(contrastStretchLUT[b][i] + ", ");
+            System.out.println();
+        }
+        ShortLookupTable lut;
+        if(src.getRaster().getNumBands() < 3)
+            lut = new ShortLookupTable(0,contrastStretchLUT[0]);
+        else
+            lut = new ShortLookupTable(0,contrastStretchLUT);
+        LookupOp op = new LookupOp(lut,null);
+        op.filter(src,dst);
+        return dst;
+    }
 }
